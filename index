@@ -132,3 +132,39 @@ Composite Profile to Execute All
     </profile>
 
 Command:mvn clean compile package -Pall-profiles
+
+//jenkins pipleline
+pipeline {
+    agent any
+    stages {
+        stage("hello"){
+            steps{
+                echo "welcome to jenkins pipeline"
+        }
+        
+        }
+        stage("sana"){
+            steps{
+                echo "welcome to jenkins pipeline"
+        }
+        
+        }
+    }
+}
+
+//gitlab
+stages:
+  - test
+  - deploy
+
+test:
+  stage: test
+  script:
+    - echo "Running tests..."
+    - echo "Tests completed!"
+
+deploy:
+  stage: deploy
+  script:
+    - echo "Deploying application..."
+    - echo "Deployment completed!"
