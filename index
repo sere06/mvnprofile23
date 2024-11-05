@@ -7,3 +7,128 @@
         <port>8089</port>
       </configuration>
         </plugin>
+//profile
+Step 1:
+Create 3 different java files with printing stmt
+package com.example;
+
+public class DevApp {
+    public static void main(String[] args) {
+        System.out.println("Running in development environment!");
+    }
+}
+
+package com.example;
+
+public class TestApp {
+    public static void main(String[] args) {
+        System.out.println("Running in testing environment!");
+    }
+}
+
+package com.example;
+
+public class ProdApp {
+    public static void main(String[] args) {
+        System.out.println("Running in production environment!");
+    }
+}
+
+step 2
+Add Plugin inside Build:
+<plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.0.0</version>
+            <configuration>
+                <mainClass>
+                    ${mainClass}
+                </mainClass>
+            </configuration>
+        </plugin>
+ Step 3:
+Add Profiles below Build
+<profiles>
+        <!-- Development Profile -->
+        <profile>
+            <id>dev</id>
+            <properties>
+                <mainClass>com.example.DevApp</mainClass>
+            </properties>
+        </profile>
+
+        <!-- Testing Profile -->
+        <profile>
+            <id>test</id>
+            <properties>
+                <mainClass>com.example.TestApp</mainClass>
+            </properties>
+        </profile>
+
+        <!-- Production Profile -->
+        <profile>
+            <id>prod</id>
+            <properties>
+                <mainClass>com.example.ProdApp</mainClass>
+            </properties>
+        </profile>
+    </profiles>
+ Step 4:
+mvn clean compile exec:java -Pdev
+mvn clean compile exec:java -Ptest
+mvn clean compile exec:java -Pprod
+
+Composite Profile to Execute All
+<profile>
+        <id>all-profiles</id>
+        <activation>
+            <activeByDefault>false</activeByDefault>
+        </activation>
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <executions>
+                        <!-- Dev App Execution -->
+                        <execution>
+                            <id>run-dev</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>java</goal>
+                            </goals>
+                            <configuration>
+                                <mainClass>com.example.DevApp</mainClass>
+                            </configuration>
+                        </execution>
+
+                        <!-- Test App Execution -->
+                        <execution>
+                            <id>run-test</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>java</goal>
+                            </goals>
+                            <configuration>
+                                <mainClass>com.example.TestApp</mainClass>
+                            </configuration>
+                        </execution>
+
+                        <!-- Prod App Execution -->
+                        <execution>
+                            <id>run-prod</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>java</goal>
+                            </goals>
+                            <configuration>
+                                <mainClass>com.example.ProdApp</mainClass>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </build>
+    </profile>
+
+Command:mvn clean compile package -Pall-profiles
